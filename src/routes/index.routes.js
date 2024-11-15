@@ -23,7 +23,7 @@ router.use("/product", productRouter)
 
 router.post("/setup", async (req, res) => {
   try {
-    await createTables();
+     createTables();
     res.status(200).send("Tables created successfully.");
   } catch (error) {
     logger.error(error);
