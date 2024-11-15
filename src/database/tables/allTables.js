@@ -67,3 +67,45 @@ export const createAddressesTable = async () => {
     console.log(error)
   }
 };
+
+
+export const createCategoriesTable = async () => {
+  try {
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS categories (
+          id SERIAL PRIMARY KEY,
+          name VARCHAR,
+          description TEXT,
+          tag VARCHAR,
+          create_at TIMESTAMPTZ 
+          updated_at TIMESTAMPTZ 
+      )
+    `);    
+  } catch (error) {
+    console.log(error)
+  }
+};
+
+
+export const createProductsTable = async () => {
+  try {
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS products (
+          id SERIAL PRIMARY KEY,
+          category_id INT REFERENCES categories(id) ON DELETE SET NULL, 
+          title VARCHAR,
+          picture VARCHAR,
+          summary VARCHAR,
+          description VARCHAR,
+          price REAL,
+          discount_type VARCHAR,
+          discount_value REAL,
+          tags VARCHAR[], 
+          create_at TIMESTAMPTZ 
+          updated_at TIMESTAMPTZ 
+      )
+    `);    
+  } catch (error) {
+    console.log(error)
+  }
+};
