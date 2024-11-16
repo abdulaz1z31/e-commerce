@@ -107,7 +107,7 @@ export const createOtpTable = async () => {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS otp (
         id SERIAL PRIMARY KEY,
-        username INT REFERENCES users(username) ON DELETE CASCADE,
+        username Varchar,
         otp VARCHAR
       )
     `);

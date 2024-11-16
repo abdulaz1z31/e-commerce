@@ -16,9 +16,9 @@ app.use((req, res) => {
     return res.status(404).send("Not found")
 })
 
-app.use((err, req, res) => {
-    if (err) {
-        return res.status(400).send(err)
+app.use((error, req, res, next) => {
+    if (error) {
+        return res.status(400).send(error)
     }
 })
 

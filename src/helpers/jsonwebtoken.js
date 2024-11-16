@@ -12,7 +12,7 @@ export const createTokens = async (payload) => {
   
 };
 
-export const verifyTokens = (type, token) => {
-  const data = jwt.verify(token, type === "access" ? jwtKey.accessSecret : jwtKey.refreshSecret);
+export const verifyTokens = (token) => {
+  const data = jwt.verify(token, jwtKey.accessSecret);
   return data;
 };

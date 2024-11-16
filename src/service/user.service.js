@@ -17,7 +17,8 @@ export const registerUserService = async (userData) => {
       throw new Error("user already exists");
     }
     const otp = await otpGenerator();
-    const result = addOtp(username, otp);
+    const result = await addOtp(username, otp);
+    
     if (!result) {
       throw new Error("wrong plase try again");
     }
@@ -74,10 +75,87 @@ export const userProfileService = async (username) => {
      if (!currenUser) {
        throw new Error("wrong");
      }
+     delete currenUser.password
      return {success:true, user:currenUser}
    } catch (error) {
       return {success:false, error}
    } 
+}
+
+export const activateUserService = async (userData, otpCode) => {
+  try {
+    const username = userData.username
+    const otpData = await findUserOtp(username)
+    if (!otpData.isExists) {
+      throw new Error("something boroke")
+    }
+    console.log(otpData.otpCode, otpCode);
+    
+    if (otpData.otpCode != otpCode) {
+      throw new Error("otp in not valid");
+    }
+    const result = await findUserByUsername(username)
+    if (!result) {
+      throw new Error("User not found");
+    }
+    const data = await updateuserByUsername(username)
+    const {isUpdate, error, currenUser} = data
+    if (isUpdate) {
+      return {success:true, user : currenUser}
+    } else {
+      return {success:false, error}
+    }
+  } catch (error) {
+    return {success:false, error}
+  }
+}
+
+export const forgetPasswordService = async (userData) => {
+  try {
+    const {email, username} = userData
+    const result = await findUserByUsername(username)
+    if (!result) {
+      throw new Error("User not found");
+    }
+    const otp = await otpGenerator();
+    const optData = updateOtp(username, otp);
+    if (!optData) {
+      throw new Error("wrong plase try again");
+    }
+    await sendMail(
+      email, 
+      "OTP", 
+      `This key for update your password : ${otp}\n
+      This is postman link to change password \n
+      http://localhost:3000/api/v1/auth/change/password/${userData.id}`
+    );
+    return {success:true, msg:"We send link and opt code for change password"}
+  } catch (error) {
+    return {success:false, error}
+  }
+}
+
+export const changePasswordService = async (userData, data) => {
+  try {
+    const {username} = userData
+    const otpData = await findUserOtp(username)
+    if (!otpData.isExists) {
+      throw new Error("something boroke")
+    }
+    
+    if (data.otp != otpData.otpCode) {
+      throw new Error("otp password is not valid");
+    }
+    const hashPassword = await generateHashPassword(data.newPassword);
+    const check = updatePassword(username, hashPassword)
+    if (check) {
+      return {success:true}
+    } else {
+      throw new Error("someting borke");  
+    }
+  } catch (error) {
+    return {success:false, error}
+  }
 }
 
 
@@ -124,6 +202,11 @@ export const deleteUserByIdService = async () => {
   }
 };
 
+
+
+
+
+
 export const findUserByUsername = async (username) => {
   try {
     const result = await pool.query(
@@ -151,6 +234,74 @@ export const addOtp = async (username, otp) => {
     );
     return data.rows[0];
   } catch (error) {
+    console.log(error);
+    
     return false;
   }
 };
+
+export const updateOtp = async (username, otp) => {
+  try {
+    const data = await pool.query(
+      `
+      UPDATE otp
+      SET otp = $1
+      WHERE username = $2
+      `,
+      [otp, username]
+    );
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+
+export const updateuserByUsername = async (username) => {
+  try {
+    const currenUser = await pool.query(
+      `
+      UPDATE users
+      SET is_active = TRUE
+      WHERE username = $1 RETURNING * 
+      `,
+      [username]
+    )
+    return {isUpdate:true, currenUser: currenUser.rows[0]}
+  } catch (error) {
+    return {isUpdate:false, error}
+  }
+}
+
+export const findUserOtp = async (username) => {
+    try {
+      const data = await pool.query(
+        `
+        SELECT otp 
+        FROM otp
+        WHERE username = $1
+        `,
+        [username]
+      )
+     const otpCode = data.rows[0].otp
+     return {isExists:true, otpCode}
+    } catch (error) {
+      return {isExists:false, error}
+    }
+}
+
+export const updatePassword = async (username , password) => {
+  try {
+    const data = await pool.query(
+      `
+      UPDATE users
+      SET password = $1
+      WHERE username = $2
+      `,
+      [password, username]
+    );
+    return true
+  } catch (error) {
+    return false;
+  }
+}

@@ -9,9 +9,10 @@ export const checkToken = (req, res, next) => {
       return res.status(401).send("Authentication is required in bearer token");
     }
     const token = bearerToken.split(" ")[1];
-    const decode = verifyTokens("access", token);
-
+    const decode = verifyTokens(token);
+    
     req.payload = decode;
+    
     next();
   } catch (err) {
     logger.error("Error in token verification:", err);

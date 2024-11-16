@@ -39,3 +39,16 @@ VALUES
 
 INSERT INTO users (email, password,username) VALUES 
 ('$1', '$2', '$3');
+
+
+UPDATE users
+SET is_active = TRUE
+WHERE username = username
+
+UPDATE opt
+SET otp = otp
+WHERE username = username
+
+SELECT id 
+FROM users
+WHERE username == username
