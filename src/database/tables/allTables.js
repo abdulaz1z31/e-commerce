@@ -19,7 +19,6 @@ export const createUserTable = async () => {
         updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
       )
     `);
-    console.log("User table created");
   } catch (error) {
     console.log("Error creating User table:", error);
   }
@@ -36,7 +35,6 @@ export const createSocialProfilesTable = async () => {
         platform_user VARCHAR NOT NULL
       )
     `);
-    console.log("Social Profiles table created");
   } catch (error) {
     console.log("Error creating Social Profiles table:", error);
   }
@@ -59,7 +57,6 @@ export const createAddressesTable = async () => {
         landmark VARCHAR
       )
     `);
-    console.log("Addresses table created");
   } catch (error) {
     console.log("Error creating Addresses table:", error);
   }
@@ -77,7 +74,6 @@ export const createCategoriesTable = async () => {
         updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
       )
     `);
-    console.log("Categories table created");
   } catch (error) {
     console.log("Error creating Categories table:", error);
   }
@@ -101,9 +97,21 @@ export const createProductsTable = async () => {
         updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
       )
     `);
-    console.log("Products table created");
   } catch (error) {
     console.log("Error creating Products table:", error);
   }
 };
 
+export const createOtpTable = async () => {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS otp (
+        id SERIAL PRIMARY KEY,
+        username INT REFERENCES users(username) ON DELETE CASCADE,
+        otp VARCHAR
+      )
+    `);
+  } catch (error) {
+    console.log("Error creating Products table:", error);
+  }
+};

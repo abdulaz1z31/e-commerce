@@ -14,8 +14,8 @@ import { logger } from "../utils/logger.utils.js";
 
 export const router = Router();
 
-router.use("/user", userRouter);
 router.use("/auth", authRouter);
+router.use("/user", userRouter);
 router.use("/addresses", addressesRouter);
 router.use("/profiles", profilesRouter);
 router.use("/category", categoryRouter)

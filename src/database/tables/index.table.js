@@ -3,7 +3,8 @@ import {
   createAddressesTable,
   createSocialProfilesTable,
   createCategoriesTable,
-  createProductsTable
+  createProductsTable,
+  createOtpTable
 } from "./allTables.js";
 import { logger } from "../../utils/index.utils.js";
 
@@ -14,6 +15,7 @@ export const createTables = async () => {
     await createSocialProfilesTable();
     await createCategoriesTable(),
     await createProductsTable()
+    await createOtpTable()
     logger.info("All tables created successfully.");
   } catch (error) {
     logger.error(error.message); 
