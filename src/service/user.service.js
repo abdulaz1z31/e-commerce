@@ -256,7 +256,6 @@ export const updateOtp = async (username, otp) => {
   }
 };
 
-
 export const updateuserByUsername = async (username) => {
   try {
     const currenUser = await pool.query(
@@ -303,5 +302,14 @@ export const updatePassword = async (username , password) => {
     return true
   } catch (error) {
     return false;
+  }
+}
+
+export const checkIsActive = async (username) => {
+  try {
+    const result = await findUserByUsername(username)
+    
+  } catch (error) {
+    
   }
 }
